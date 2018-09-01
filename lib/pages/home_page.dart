@@ -44,22 +44,15 @@ class HomeState extends State<HomePage> {
   Widget build(BuildContext context) {
     return MaterialApp(
       theme: themeData,
-      home: DefaultTabController(
-        length: 3,
-        initialIndex: 0,
-        child: Scaffold(
-          appBar: AppBar(
-            title: Text(
-              'Annicter',
-            ),
-            elevation: 0.0,
-          ),
-          body: _children[_currentIndex],
-          bottomNavigationBar: BottomNavigationBar(
-            currentIndex: _currentIndex,
-            onTap: onTabTapped,
-            items: _buildBottomNavigationBarItems(),
-          ),
+      home: Scaffold(
+        appBar: AppBar(
+          title: Text('Annicter'),
+        ),
+        body: _children[_currentIndex],
+        bottomNavigationBar: BottomNavigationBar(
+          currentIndex: _currentIndex,
+          onTap: onTabTapped,
+          items: _buildBottomNavigationBarItems(),
         ),
       ),
     );

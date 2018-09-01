@@ -30,6 +30,8 @@ class WorksScreenState extends State<WorksScreen> {
     _bloc.outTotalWorks.listen((totalWorks) =>
       setState(() => _totalWorks = totalWorks)
     );
+
+    _bloc.inWorkIndex.add(0);
   }
 
   @override
@@ -43,7 +45,7 @@ class WorksScreenState extends State<WorksScreen> {
     return StreamBuilder<List<Work>>(
       stream: _bloc.outWorksList,
       builder: (context, snapshot) {
-        if (_totalWorks == null || snapshot.data == null) {
+        if (snapshot.data == null) {
           return Center(
               child: CircularProgressIndicator()
           );
