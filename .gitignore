@@ -87,5 +87,5 @@ unlinked_spec.ds
 !/packages/flutter_tools/test/data/dart_dependencies_test/**/.packages
 
 # Annict
-lib/client_id.dart
-lib/client_secret.dart
+# lib/client_id.dart
+# lib/client_secret.dart
