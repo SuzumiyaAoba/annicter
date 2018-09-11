@@ -1,4 +1,5 @@
 import 'package:annicter/bloc/home_bloc.dart';
+import 'package:annicter/pages/programs_page.dart';
 import 'package:annicter/pages/works_page.dart';
 import 'package:annicter/theme.dart';
 import 'package:flutter/material.dart';
@@ -31,8 +32,8 @@ class HomeState extends State<HomePage> {
   }
 
   final List<Widget> _children = [
-    Icon(Icons.timeline),
-    WorksScreen(),
+    ProgramsPage(),
+    WorksPage(),
     Icon(Icons.directions_bike),
   ];
 

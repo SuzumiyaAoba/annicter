@@ -5,18 +5,18 @@ import 'package:annicter/bloc/works_bloc.dart';
 import 'package:annicter/widgets/work_card_widget.dart';
 import 'package:flutter/material.dart';
 
-class WorksScreen extends StatefulWidget {
+class WorksPage extends StatefulWidget {
   final AnnictApi api;
 
-  WorksScreen({Key key, AnnictApi api})
+  WorksPage({Key key, AnnictApi api})
       : this.api = api ?? AnnictApiImpl.singleton,
         super(key: key);
 
   @override
-  State<StatefulWidget> createState() => WorksScreenState();
+  State<StatefulWidget> createState() => _WorksPageState();
 }
 
-class WorksScreenState extends State<WorksScreen> {
+class _WorksPageState extends State<WorksPage> {
   WorksBloc _bloc;
   int _totalWorks;
 

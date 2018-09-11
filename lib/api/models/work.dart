@@ -42,6 +42,9 @@ class Work {
   });
 
   factory Work.fromJson(Map<String, dynamic> jsonStr) {
+    if (jsonStr == null) {
+      return null;
+    }
     return Work(id: jsonStr['id'],
       title: jsonStr['title'],
       titleKana: jsonStr['title_kana'],

@@ -2,41 +2,39 @@ import 'dart:async';
 import 'dart:collection';
 
 import 'package:annicter/api/annict_api.dart';
-import 'package:annicter/api/annict_api_impl.dart';
+import 'package:annicter/api/models/programs.dart';
+import 'package:annicter/api/models/program.dart';
 import 'package:annicter/api/models/work.dart';
-import 'package:annicter/api/models/works.dart';
-import 'package:annicter/api/season.dart';
-import 'package:rxdart/subjects.dart';
+import 'package:rxdart/rxdart.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
-class WorksBloc {
+class ProgramsBloc {
   String _accessToken;
 
-  int _worksPerPage = 25;
+  int _programsPerPage = 25;
 
-  int _totalWorks = -1;
+  int _totalPrograms = -1;
 
-  final _fetchPages = <int, Works>{};
-
+  final _fetchPages = <int, Programs>{};
   final _pagesBeingFetched = Set<int>();
 
-  // ########## STREAMS ##########
+  // ########## STREAM ##########
 
   PublishSubject<String> _accessTokenController = PublishSubject<String>();
   Sink<String> get inAccessToken => _accessTokenController.sink;
 
-  PublishSubject<List<Work>> _worksController = PublishSubject<List<Work>>();
-  Sink<List<Work>> get _inWorksList => _worksController.sink;
-  Stream<List<Work>> get outWorksList => _worksController.stream;
+  PublishSubject<List<Program>> _programsController = PublishSubject<List<Program>>();
+  Sink<List<Program>> get _inProgramsList => _programsController.sink;
+  Stream<List<Program>> get outProgramsList => _programsController.stream;
 
   PublishSubject<int> _indexController = PublishSubject<int>();
-  Sink<int> get inWorkIndex => _indexController.sink;
+  Sink<int> get inProgramIndex => _indexController.sink;
 
-  BehaviorSubject<int> _totalWorksController = BehaviorSubject<int>(seedValue: 0);
-  Sink<int> get _inTotalWorks => _totalWorksController.sink;
-  Stream<int> get outTotalWorks => _totalWorksController.stream;
+  BehaviorSubject<int> _totalProgramsController = BehaviorSubject<int>(seedValue: 0);
+  Sink<int> get _inTotalPrograms => _totalProgramsController.sink;
+  Stream<int> get outTotalPrograms => _totalProgramsController.stream;
 
-  WorksBloc(AnnictApi api) {
+  ProgramsBloc(AnnictApi api) {
     _indexController.stream
         .bufferTime(Duration(microseconds: 500))
         .where((batch) => batch.isNotEmpty)
@@ -49,11 +47,11 @@ class WorksBloc {
   }
 
   void dispose() {
-    _worksController.close();
-    _indexController.close();
     _accessTokenController.close();
 
-    _totalWorksController.close();
+    _programsController.close();
+    _indexController.close();
+    _totalProgramsController.close();
   }
 
   void _loadAccessToken() async {
@@ -63,28 +61,27 @@ class WorksBloc {
 
   void _handleIndexes(List<int> indexes, AnnictApi api) {
     indexes.forEach((index) {
-      final int pageIndex = 1 + ((index + 1) ~/ _worksPerPage);
+      final int pageIndex = 1 + ((index + 1) ~/ _programsPerPage);
       if (!_fetchPages.containsKey(pageIndex)) {
         if (!_pagesBeingFetched.contains(pageIndex)) {
           _pagesBeingFetched.add(pageIndex);
 
-          api.works(
+          api.programs(
             accessToken: _accessToken,
-            filterSeason: Season(2018, FourSeasons.summer),
-            sortWatchersCount: 'desc',
+            sortStartedAt: 'desc',
             page: pageIndex,
-            perPage: _worksPerPage,
+            perPage: _programsPerPage,
           ).then((fetchedPage) => _handleFetchedPage(fetchedPage, pageIndex));
         }
       }
     });
   }
 
-  void _handleFetchedPage(Works page, int pageIndex) {
+  void _handleFetchedPage(Programs page, int pageIndex) {
     _fetchPages[pageIndex] = page;
     _pagesBeingFetched.remove(pageIndex);
 
-    List<Work> works = <Work>[];
+    List<Program> programs = <Program>[];
     List<int> pageIndexes = _fetchPages.keys.toList();
     pageIndexes.sort((a, b) => a.compareTo(b));
 
@@ -97,17 +94,17 @@ class WorksBloc {
           break;
         }
 
-        works.addAll(_fetchPages[i].works);
+        programs.addAll(_fetchPages[i].programs);
       }
     }
 
-    if (_totalWorks == -1) {
-      _totalWorks = page.totalCount;
-      _inTotalWorks.add(_totalWorks);
+    if (_totalPrograms == -1) {
+      _totalPrograms = page.totalCount;
+      _inTotalPrograms.add(_totalPrograms);
     }
 
-    if (works.length > 0) {
-      _inWorksList.add(UnmodifiableListView<Work>(works));
+    if (programs.length > 0) {
+      _inProgramsList.add(UnmodifiableListView<Program>(programs));
     }
   }
 }
